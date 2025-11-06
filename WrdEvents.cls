@@ -14,13 +14,13 @@ Attribute App.VB_VarHelpID = -1
 Public IsBusy As Boolean
 
 Private Sub App_DocumentBeforeClose(ByVal Doc As Document, Cancel As Boolean)
-    Dim isDocentDocument As Boolean
+    Dim IsDocentDocument As Boolean
     Dim FName As String
     FName = GetFileName(GetActiveFName(Doc))
     'Here
 '    RemRegLastSelectedP FName & "_ProjectName"
     On Error Resume Next
-    DocsInfo.Remove Doc.Name
+    'DocsInfo.Remove Doc.Name
     If GetProperty(pDocType) = "DocentHelp" Then
         Dim CC As ContentControl
         Set CC = FindCC("NeverShowAgain", Doc)
@@ -30,9 +30,9 @@ Private Sub App_DocumentBeforeClose(ByVal Doc As Document, Cancel As Boolean)
         Doc.Saved = True
     End If
 '    Else
-        isDocentDocument = GetProperty(pIsDocument)
-        If isDocentDocument Then UpdateServerDictionary
-        If isDocentDocument And Not CodeIsRunning Then
+        IsDocentDocument = GetProperty(pIsDocument)
+        If IsDocentDocument Then UpdateServerDictionary
+        If IsDocentDocument And Not CodeIsRunning Then
             If Not ActiveDocument.Saved And GetProperty(pDocType) <> "MS Project" Then
                 
                 Cancel = frmMsgBox.Display("Some changes have not been saved." & vbNewLine & _
@@ -75,17 +75,26 @@ End Sub
 '    End If
 'End Sub
 
-'Private Sub App_DocumentBeforeSave(ByVal Doc As Document, SaveAsUI As Boolean, Cancel As Boolean)
-'
-'End Sub
+Private Sub App_DocumentBeforeSave(ByVal Doc As Document, SaveAsUI As Boolean, Cancel As Boolean)
+    Dim IsDocentDocument As Boolean
+    On Error Resume Next
+    IsDocentDocument = GetProperty(pIsDocument)
+    If Application.UserName = "Abdallah Ali" Then IsDocentDocument = False
+    If Not CodeIsRunning Then
+        If IsDocentDocument Then
+            frmMsgBox.Display "You are not allowed to save this document locally", Array("OK"), Critical
+            Cancel = True
+        End If
+    End If
+End Sub
 
 Sub App_DocumentChange()
 '    Debug.Print "AAAAAAAAAAAAAAAAAAAAAAA"
     If Application.Documents.Count Then
 '        Invalidate
-        Invalidate "FileSaveAs", True
-        Invalidate "FileSave", True  'contextObject.Document
-        Invalidate "TabSave", True  'contextObject.Document
+'        Invalidate "FileSaveAs", True
+'        Invalidate "FileSave", True  'contextObject.Document
+'        Invalidate "TabSave", True  'contextObject.Document
         RefreshDictionary
     End If
 '    MsgBox "Changed"
@@ -96,9 +105,11 @@ Sub App_DocumentChange()
 End Sub
 
 Private Sub App_NewDocument(ByVal Doc As Document)
-    App_DocumentOpen Doc
-    On Error Resume Next
-    DocsInfo.Add LoadDocInfo(Doc), Doc.Name
+   ' If Not CodeIsRunning Then
+        App_DocumentOpen Doc
+'        On Error Resume Next
+'        DocsInfo.Add LoadDocInfo(Doc), Doc.Name
+    'End If
 End Sub
 Private Sub App_DocumentOpen(ByVal Doc As Document)
     On Error GoTo ex
@@ -106,9 +117,9 @@ Private Sub App_DocumentOpen(ByVal Doc As Document)
     DoEvents
     SetMetaData Doc
     On Error Resume Next
-    If DocsInfo Is Nothing Then Set DocsInfo = New Collection
-    DocsInfo.Remove Doc.Name
-    DocsInfo.Add LoadDocInfo(Doc), Doc.Name
+'    If DocsInfo Is Nothing Then Set DocsInfo = New Collection
+'    DocsInfo.Remove Doc.Name
+'    DocsInfo.Add LoadDocInfo(Doc), Doc.Name
     RefreshRibbon
     DoEvents: Sleep 50
 '    If Not IsBusy Then
