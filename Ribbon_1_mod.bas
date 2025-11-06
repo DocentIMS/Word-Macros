@@ -777,17 +777,41 @@ Sub IdButtonPMPOnAction(): MsgBox "Under construction...", vbExclamation, "Docen
 '    DarkMode = IsDarkModeSelected
 '    Set IdButtonRefreshGetImage = MLoadPictureGDI.LoadPictureGDI("D:\Ongoing\23-06-15 - Wayne Glover (Word)\Old\Icons\Ribbon Icons\Refresh" & IIf(DarkMode, "B", "W") & ImagesExtension)
 'End Function
-Private Sub IdButtonRefreshOnAction()
+Private Function IdButtonRefreshGetEnabled()
+    IdButtonRefreshGetEnabled = IsProjectSelected(True)
+End Function
+Private Function IdButtonRefresh0GetEnabled()
+    IdButtonRefresh0GetEnabled = IdButtonRefreshGetEnabled
+End Function
+Private Sub IdButtonRefresh0OnAction()
+    IdButtonRefreshOnAction
+End Sub
+Private Sub IdButtonRefreshAllOnAction()
     On Error Resume Next
     frmMsgBox.Display "Please wait while projects are being updated...", Array(), None, ShowModal:=vbModeless
     RefreshRibbon True
-    'UpdateAllProjectsInfo True
+    UpdateAllProjectsInfo True
     SetRegSelection GetFileName(GetActiveFName(ActiveDocument)), projectName(0), selectedProject
     NewPNum = 0
     ProjectSelected ActiveDocument, 0, True ',pnum, True
     RefreshRibbon 'True
     Unload frmMsgBox
     frmMsgBox.Display "All projects were updated."
+End Sub
+Private Sub IdButtonRefreshInfoOnAction()
+    frmMsgBox.Display "Last Refresh: " & Format(GetLastRefresh(ProjectURLStr), DateTimeFormat)
+End Sub
+Private Sub IdButtonRefreshOnAction()
+    On Error Resume Next
+    frmMsgBox.Display "Please wait while " & ProjectNameStr & " is being updated...", Array(), None, ShowModal:=vbModeless
+'    RefreshRibbon True
+    DownloadProjectInfo ProjectURLStr, UserNameStr, UserPasswordStr, ProjectNameStr, True
+'    SetRegSelection GetFileName(GetActiveFName(ActiveDocument)), projectName(0), selectedProject
+'    NewPNum = 0
+'    ProjectSelected ActiveDocument, 0, True ',pnum, True
+    RefreshRibbon 'True
+    Unload frmMsgBox
+    frmMsgBox.Display ProjectNameStr & " was updated."
 End Sub
 Private Function IdButtonHelpGetEnabled(): IdButtonHelpGetEnabled = NewPNum > 0 And IsAuthorized: End Function
 Private Sub IdButtonHelpOnAction()

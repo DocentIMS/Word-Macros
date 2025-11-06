@@ -36,6 +36,7 @@ Private Const TrafficValue = "docentTrafficInfo"
 
 
 Private Const ProjectInfoValue = "docentProjectInfo"
+Private Const ProjectRefreshValue = "docentProjectRefresh"
 Private Const ProjectColorValue = "docentProjectColor"
 Private Const ProjectGroupsValue = "docentProjectGroups"
 Private Const ProjectClientValue = "docentProjectClient"
@@ -206,6 +207,12 @@ Sub SetLocations(PName As String, Locations As Dictionary)
     On Error Resume Next
     SetFolderObject ProjectSaveLocationsValue, Locations, PName
 End Sub
+
+Function GetLastRefresh(PURL As String) As Date
+    Dim s As String
+    s = GetReg(ProjectRefreshValue, BaseRegDir & "\" & CleanName(PURL, SheetName))
+    GetLastRefresh = DateValue(s) + TimeValue(s)
+End Function
 
 Function GetTraffic(Optional ByVal PName As String, Optional Force As Boolean)
     Dim TrafficDict As Dictionary
@@ -589,7 +596,7 @@ Function DownloadProjectInfo(Optional mURL As String, Optional mUser As String, 
     ' IMPROVED: Delete and recreate project folder for clean refresh
     If ForceCleanSlate Then
         Dim projectFolder As String
-        projectFolder = InstallationPath & ObjectsFolder & mPName
+        projectFolder = InstallationPath & ObjectsFolder & CleanName(mURL, SheetName)
         
         If FSO.FolderExists(projectFolder) Then
             If SafeDeleteFolder(projectFolder) Then
@@ -762,6 +769,7 @@ Sub SaveProjectInfoToReg(Optional mURL As String)
     SetFolderObject ProjectInfoValue, ProjectInfo, Pth
     
     SetReg ProjectColorValue, ProjectColorStr, BaseRegDir & "\" & Pth
+    SetReg ProjectRefreshValue, Now, BaseRegDir & "\" & Pth
     
     SetFolderObject UserTeamMembersValue, MembersDict, Pth
     SetFolderObject UserGroupsValue, UserGroupsDict, Pth
