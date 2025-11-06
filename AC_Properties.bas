@@ -184,7 +184,7 @@ End Function
 '   label - Display label for property
 '   propertyName - Name of property to retrieve
 '=======================================================
-Sub AppendPropertyIfExists(ByRef Msg As String, _
+Sub AppendPropertyIfExists(ByRef msg As String, _
                                    ByVal label As String, _
                                    ByVal propertyName As DocProperty)
     Dim value As String
@@ -192,7 +192,7 @@ Sub AppendPropertyIfExists(ByRef Msg As String, _
     On Error Resume Next
     value = CStr(GetProperty(propertyName))
     If Err.Number = 0 And Len(value) > 0 Then
-        Msg = Msg & "   " & label & ": " & value & vbLf
+        msg = msg & "   " & label & ": " & value & vbLf
     End If
     On Error GoTo 0
 End Sub
@@ -206,7 +206,7 @@ End Sub
 '   label - Display label for property
 '   propertyName - Name of property to retrieve
 '=======================================================
-Sub AppendPropertyDateIfExists(ByRef Msg As String, _
+Sub AppendPropertyDateIfExists(ByRef msg As String, _
                                        ByVal label As String, _
                                        ByVal propertyName As DocProperty)
     Dim value As String
@@ -215,7 +215,7 @@ Sub AppendPropertyDateIfExists(ByRef Msg As String, _
     value = CStr(GetProperty(propertyName))
     If Err.Number = 0 And Len(value) > 0 Then
         On Error Resume Next
-        Msg = Msg & "   " & label & ": " & Format$(value, DateTimeFormat) & vbLf
+        msg = msg & "   " & label & ": " & Format$(value, DateTimeFormat) & vbLf
         On Error GoTo 0
     End If
     On Error GoTo 0

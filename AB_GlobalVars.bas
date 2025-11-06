@@ -186,7 +186,7 @@ Public NotScopeAsked As Collection
 Public UserName() As String
 
 ' Array of user IDs
-Public UserID() As String
+Public userID() As String
 
 '=======================================================
 ' PROJECT INFORMATION ARRAYS

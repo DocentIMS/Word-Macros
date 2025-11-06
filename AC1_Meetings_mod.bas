@@ -53,7 +53,7 @@ Private Const CurrentMod As String = "Meetings"
 Public Function GetMeetingTypes() As Dictionary
     Dim i As Long
     Dim MeetingTypesCollection As Collection
-    Dim MeetingType As Dictionary
+    Dim meetingType As Dictionary
     Dim keyValue As String
     
     On Error GoTo ErrorHandler
@@ -122,16 +122,16 @@ Public Function GetMeetingTypes() As Dictionary
             GoTo NextMeetingType
         End If
         
-        Set MeetingType = MeetingTypesCollection(i)
+        Set meetingType = MeetingTypesCollection(i)
         
         ' Validate meeting type has required field
-        If Not MeetingType.Exists("meeting_type") Then
+        If Not meetingType.Exists("meeting_type") Then
             WriteLog 2, CurrentMod, "GetMeetingTypes", _
                      "Meeting type " & i & " missing 'meeting_type' field, skipping"
             GoTo NextMeetingType
         End If
         
-        keyValue = MeetingType("meeting_type")
+        keyValue = meetingType("meeting_type")
         
         ' Validate key is not empty
         If Len(keyValue) = 0 Then
@@ -142,7 +142,7 @@ Public Function GetMeetingTypes() As Dictionary
         
         ' Add to result dictionary (avoid duplicate keys)
         If Not GetMeetingTypes.Exists(keyValue) Then
-            GetMeetingTypes.Add keyValue, MeetingType
+            GetMeetingTypes.Add keyValue, meetingType
         Else
             WriteLog 2, CurrentMod, "GetMeetingTypes", _
                      "Duplicate meeting type found: " & keyValue
@@ -232,7 +232,7 @@ End Function
 '   End If
 '=======================================================
 Public Function ValidateMeetingType(ByVal TypeName As String) As Boolean
-    Dim MeetingType As Dictionary
+    Dim meetingType As Dictionary
     
     On Error GoTo ErrorHandler
     
@@ -241,8 +241,8 @@ Public Function ValidateMeetingType(ByVal TypeName As String) As Boolean
         Exit Function
     End If
     
-    Set MeetingType = GetMeetingTypeByName(TypeName)
-    ValidateMeetingType = Not (MeetingType Is Nothing)
+    Set meetingType = GetMeetingTypeByName(TypeName)
+    ValidateMeetingType = Not (meetingType Is Nothing)
     
     Exit Function
     

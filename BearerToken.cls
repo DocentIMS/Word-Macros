@@ -24,13 +24,13 @@ Property Get Token() As String
         Class_Initialize
     End If
     If Len(mToken) = 0 Or TimeDiff >= mLastsFor Then
-        Dim Response As WebResponse, Body As Dictionary
+        Dim response As WebResponse, Body As Dictionary
         Set Body = CreateBody(Array("grant_type", "account_id"), Array("account_credentials", mAccountID), False)
-        Set Response = UseAPI(Body, HttpPost, , , mURL, mClientID, mClientSecret, , FormUrlEncoded)
-        mLastsFor = Response.Data("expires_in")
+        Set response = UseAPI(Body, HttpPost, , , mURL, mClientID, mClientSecret, , FormUrlEncoded)
+        mLastsFor = response.Data("expires_in")
         mStartTime = Timer
-        mToken = Response.Data("access_token")
-        Set Response = Nothing
+        mToken = response.Data("access_token")
+        Set response = Nothing
     End If
     Token = mToken
 End Property

@@ -58,7 +58,7 @@ Private Const ScopeParserPth = "\docentScopeParser"
 Private Const DocumentMgrPth = "\docentDocumentMgr"
 
 Public Enum DropDownType
-    SelectedProject = 0
+    selectedProject = 0
     SelectedDocument = 1
     SelectedMeetingDocument = 2
     SelecteTemplate = 3
@@ -128,7 +128,7 @@ End Function
 
 Private Function GetSelectionRegPath(DDType As DropDownType) As String
     Select Case DDType
-    Case SelectedProject: GetSelectionRegPath = SelectedProjectValue
+    Case selectedProject: GetSelectionRegPath = SelectedProjectValue
     Case SelectedDocument: GetSelectionRegPath = SelectedDocumentValue
     Case SelectedMeetingDocument: GetSelectionRegPath = SelectedMeetingDocumentValue
     Case SelecteTemplate: GetSelectionRegPath = SelectedTemplateValue
@@ -352,7 +352,7 @@ Private Sub ResetProjectsArrays(PMax As Long)
     ReDim NoPlanningProjectURL(0 To 0)
     ReDim projectURL(0 To PMax)
     ReDim Password(0 To PMax)
-    ReDim UserID(0 To PMax)
+    ReDim userID(0 To PMax)
     ReDim projectName(0 To PMax)
     ReDim ProjectColor(0 To PMax)
     ReDim ParseUploaded(0 To PMax)
@@ -393,7 +393,7 @@ Sub LoadProjectsReg(Ps As Collection)
         Password(i) = DecryptPassword(GetReg(PasswordValue, Pth))
         projectName(i) = GetReg(ProjectNameValue, Pth)
         ProjectColor(i) = GetReg(ProjectColorValue, Pth)
-        UserID(i) = GetReg(UserIDValue, Pth)
+        userID(i) = GetReg(UserIDValue, Pth)
         ProjectIsPlanning(i) = GetReg(ProjectIsPlanningValue, Pth)
         If ProjectIsPlanning(i) = "true" Then
             ReDim Preserve PlanningProjectName(0 To UBound(PlanningProjectName) + 1)
@@ -869,7 +869,7 @@ Sub LoadProjectInfoReg(Optional SelectedProjectName, Optional Retry As Boolean)
     
     If IsMissing(SelectedProjectName) Then
         If Len(ProjectNameStr) = 0 Then
-            ProjectNameStr = GetProjectNameByIndex(GetProjectIndexByURL(GetRegSelection(GetActiveFName(ActiveDocument), SelectedProject)))
+            ProjectNameStr = GetProjectNameByIndex(GetProjectIndexByURL(GetRegSelection(GetActiveFName(ActiveDocument), selectedProject)))
         End If
         If Len(ProjectNameStr) = 0 Then
             ProjectNameStr = GetProjectNameByIndex(GetProjectIndexByIndex(NewPNum))

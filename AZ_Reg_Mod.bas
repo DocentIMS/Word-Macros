@@ -1,4 +1,4 @@
-Attribute VB_Name = "AZ_Reg_Mod1"
+Attribute VB_Name = "AZ_Reg_Mod"
 Option Explicit
 
 '=======================================================

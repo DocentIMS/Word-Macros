@@ -312,7 +312,7 @@ End Function
 ' Function: HandleAPIResponse
 ' Purpose: Process and log API response
 '=======================================================
-Private Sub HandleAPIResponse(ByVal Response As WebResponse, _
+Private Sub HandleAPIResponse(ByVal response As WebResponse, _
                              ByVal projectName As String, _
                              ByVal mUser As String, _
                              ByVal mPwd As String, _
@@ -322,9 +322,9 @@ Private Sub HandleAPIResponse(ByVal Response As WebResponse, _
     
     On Error Resume Next
     
-    Select Case Response.StatusCode
+    Select Case response.StatusCode
         Case HTTP_OK, HTTP_CREATED, HTTP_NO_CONTENT
-            WriteLog 1, CurrentMod, CurrentF, Response.StatusDescription
+            WriteLog 1, CurrentMod, CurrentF, response.StatusDescription
         
         Case HTTP_UNAUTHORIZED
             statusMsg = "Unauthorized (401)"
@@ -351,7 +351,7 @@ Private Sub HandleAPIResponse(ByVal Response As WebResponse, _
         
         Case Else
             WriteLog 3, CurrentMod, CurrentF, _
-                     "Status " & Response.StatusCode & ": " & Response.Content
+                     "Status " & response.StatusCode & ": " & response.Content
     End Select
 End Sub
 
@@ -711,7 +711,7 @@ Public Function IsValidUser(Optional ByVal mURL As String = vbNullString, _
                            Optional ByVal mUser As String = vbNullString, _
                            Optional ByVal mPwd As String = vbNullString) As String
     
-    Dim Response As WebResponse
+    Dim response As WebResponse
     Dim groupsDict As Dictionary
     
     On Error GoTo ErrorHandler
@@ -723,22 +723,22 @@ Public Function IsValidUser(Optional ByVal mURL As String = vbNullString, _
     If Len(mPwd) = 0 Then mPwd = UserPasswordStr
     
     ' Make API call
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/@main_info", , mURL, mUser, mPwd)
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/@main_info", , mURL, mUser, mPwd)
     
     ' Check response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         IsValidUser = "Incorrect URL or network error"
         GoTo ErrorHandler
     End If
     
-    Select Case Response.StatusCode
+    Select Case response.StatusCode
         Case HTTP_OK
             ' Validate response data
-            If IsNull(Response.Data(1)("id")) Then
+            If IsNull(response.Data(1)("id")) Then
                 IsValidUser = "The server is not ready. Please contact the project manager."
             Else
                 ' Check group membership
-                Set groupsDict = GetGroupsDict(Response.Data)
+                Set groupsDict = GetGroupsDict(response.Data)
                 If groupsDict.Exists("PrjTeam") Or groupsDict.Exists("meadows_board") Then
                     IsValidUser = "Ok"
                     WriteLog 1, CurrentMod, "IsValidUser", "Verified User: " & mUser
@@ -754,7 +754,7 @@ Public Function IsValidUser(Optional ByVal mURL As String = vbNullString, _
                         "Please contact the project manager."
         
         Case HTTP_TIMEOUT
-            IsValidUser = Response.StatusDescription
+            IsValidUser = response.StatusDescription
         
         Case HTTP_UNAUTHORIZED
             IsValidUser = "Username or password is incorrect."
@@ -794,7 +794,7 @@ Public Function GetMainInfo(Optional ByVal mURL As String = vbNullString, _
                            Optional ByVal mPwd As String = vbNullString, _
                            Optional ByVal Scope As String = vbNullString) As Collection
     
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -808,21 +808,21 @@ Public Function GetMainInfo(Optional ByVal mURL As String = vbNullString, _
     End If
     
     ' Make API call
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/@main_info" & Scope, , mURL, mUser, mPwd)
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/@main_info" & Scope, , mURL, mUser, mPwd)
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, CurrentF, "Response is Nothing"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        If Not IsNull(Response.Data(1)("id")) Then
-            Set GetMainInfo = Response.Data
+    ElseIf response.StatusCode = HTTP_OK Then
+        If Not IsNull(response.Data(1)("id")) Then
+            Set GetMainInfo = response.Data
         Else
             WriteLog 3, CurrentMod, CurrentF, _
-                     "Invalid response data: " & Response.Content
+                     "Invalid response data: " & response.Content
         End If
     Else
         WriteLog 3, CurrentMod, CurrentF, _
-                 "Failed with status " & Response.StatusCode & ": " & Response.Content
+                 "Failed with status " & response.StatusCode & ": " & response.Content
     End If
     
     Exit Function
@@ -849,7 +849,7 @@ Public Function GetDocsInfo(Optional ByVal mURL As String = vbNullString, _
                            Optional ByVal mPwd As String = vbNullString, _
                            Optional ByVal mPName As String = vbNullString) As Project.Dictionary
     
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -865,21 +865,21 @@ Public Function GetDocsInfo(Optional ByVal mURL As String = vbNullString, _
     If Len(mPName) = 0 Then mPName = mURL
     
     ' Make API call
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/@project_info", , mURL, mUser, mPwd)
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/@project_info", , mURL, mUser, mPwd)
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, CurrentF, "Response is Nothing"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        If Not IsNull(Response.Data("short_name")) Then
-            Set GetDocsInfo = Response.Data
+    ElseIf response.StatusCode = HTTP_OK Then
+        If Not IsNull(response.Data("short_name")) Then
+            Set GetDocsInfo = response.Data
         Else
             WriteLog 3, CurrentMod, CurrentF, _
-                     "Failed to get project info: " & mPName & " - " & Response.Content
+                     "Failed to get project info: " & mPName & " - " & response.Content
         End If
     Else
         WriteLog 3, CurrentMod, CurrentF, _
-                 "Failed with status " & Response.StatusCode
+                 "Failed with status " & response.StatusCode
     End If
     
     Exit Function
@@ -906,7 +906,7 @@ Public Function GetWorkflowInfo(Optional ByVal mURL As String = vbNullString, _
                                Optional ByVal mPwd As String = vbNullString, _
                                Optional ByVal mPName As String = vbNullString) As Project.Dictionary
     
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -922,17 +922,17 @@ Public Function GetWorkflowInfo(Optional ByVal mURL As String = vbNullString, _
     If Len(mPName) = 0 Then mPName = mURL
     
     ' Make API call
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, _
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, _
                          "/noapi/@workflow_info?portal_type=*", , mURL, mUser, mPwd)
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, CurrentF, "Failed to get workflow info: " & Err.Description
-    ElseIf Response.StatusCode = HTTP_OK Then
-        Set GetWorkflowInfo = Response.Data
+    ElseIf response.StatusCode = HTTP_OK Then
+        Set GetWorkflowInfo = response.Data
     Else
         WriteLog 3, CurrentMod, CurrentF, _
-                 "Failed for project " & mPName & ": " & Response.Content
+                 "Failed for project " & mPName & ": " & response.Content
     End If
     
     Exit Function
@@ -1126,7 +1126,7 @@ Public Function GetAPIContent(ByVal URL As String, _
                              Optional ByVal mUser As String = vbNullString, _
                              Optional ByVal mPwd As String = vbNullString) As WebResponse
     
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -1137,10 +1137,10 @@ Public Function GetAPIContent(ByVal URL As String, _
         Exit Function
     End If
     
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, URL, , mURL, mUser, mPwd)
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, URL, , mURL, mUser, mPwd)
     
-    If Not Response Is Nothing Then
-        Set GetAPIContent = Response
+    If Not response Is Nothing Then
+        Set GetAPIContent = response
     End If
     
     Exit Function
@@ -1160,7 +1160,7 @@ End Function
 ' Returns: WebResponse object, or Nothing on error
 '=======================================================
 Public Function DeleteAPIContent(ByVal URL As String) As WebResponse
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -1171,10 +1171,10 @@ Public Function DeleteAPIContent(ByVal URL As String) As WebResponse
         Exit Function
     End If
     
-    Set Response = UseAPI(Nothing, WebMethod.HttpDelete, URL)
+    Set response = UseAPI(Nothing, WebMethod.HttpDelete, URL)
     
-    If Not Response Is Nothing Then
-        Set DeleteAPIContent = Response
+    If Not response Is Nothing Then
+        Set DeleteAPIContent = response
     End If
     
     Exit Function
@@ -1397,7 +1397,7 @@ Public Function GetAPIFolder(Optional ByVal FolderPath As String = vbNullString,
                             Optional ByVal mUser As String = vbNullString, _
                             Optional ByVal mPwd As String = vbNullString) As Collection
     
-    Dim Response As WebResponse
+    Dim response As WebResponse
     Dim QueryString As String
     Dim i As Long
     
@@ -1411,16 +1411,16 @@ Public Function GetAPIFolder(Optional ByVal FolderPath As String = vbNullString,
                                   SortOnFields, BatchSize)
     
     ' Execute search
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, QueryString, FolderPath, mURL, mUser, mPwd)
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, QueryString, FolderPath, mURL, mUser, mPwd)
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, CurrentF, "Response is Nothing"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        Set GetAPIFolder = Response.Data("items")
+    ElseIf response.StatusCode = HTTP_OK Then
+        Set GetAPIFolder = response.Data("items")
     Else
         WriteLog 3, CurrentMod, CurrentF, _
-                 "Failed to get folder: " & QueryString & " - " & Response.Content
+                 "Failed to get folder: " & QueryString & " - " & response.Content
     End If
     
     Exit Function
@@ -1635,7 +1635,7 @@ Public Function DownloadAPIFile(ByVal fileURL As String, _
                                Optional ByVal mUser As String = vbNullString, _
                                Optional ByVal mPwd As String = vbNullString) As String
     
-    Dim Response As WebResponse
+    Dim response As WebResponse
     Dim Stream As Object
     Const DownloadSuffix As String = "/@@download/file"
     
@@ -1656,21 +1656,21 @@ Public Function DownloadAPIFile(ByVal fileURL As String, _
     End If
     
     ' Download file
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/" & fileURL, , _
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/" & fileURL, , _
                          mURL, mUser, mPwd, timeout:=APILongTimeout)
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, CurrentF, "Failed to download: " & fileURL
-    ElseIf Response.StatusCode = HTTP_NOT_FOUND Then
+    ElseIf response.StatusCode = HTTP_NOT_FOUND Then
         ' Try with lowercase and dashes
         If fileURL <> Replace(LCase$(fileURL), " ", "-") Then
             DownloadAPIFile = DownloadAPIFile(Replace(LCase$(fileURL), " ", "-"), _
                                              AsTemplate, FName, mURL, mUser, mPwd)
         End If
-    ElseIf Response.StatusCode = HTTP_OK Then
+    ElseIf response.StatusCode = HTTP_OK Then
         ' Save file to disk
-        DownloadAPIFile = SaveDownloadedFile(Response, fileURL, FName, mURL, mUser, mPwd)
+        DownloadAPIFile = SaveDownloadedFile(response, fileURL, FName, mURL, mUser, mPwd)
     End If
     
     Exit Function
@@ -1685,7 +1685,7 @@ End Function
 ' Purpose: Save downloaded file content to disk
 ' Returns: Local file path
 '=======================================================
-Private Function SaveDownloadedFile(ByVal Response As WebResponse, _
+Private Function SaveDownloadedFile(ByVal response As WebResponse, _
                                    ByVal fileURL As String, _
                                    ByRef FName As String, _
                                    ByVal mURL As String, _
@@ -1700,7 +1700,7 @@ Private Function SaveDownloadedFile(ByVal Response As WebResponse, _
     Set Stream = CreateObject("ADODB.Stream")
     Stream.Open
     Stream.Type = 1 ' adTypeBinary
-    Stream.Write Response.Body
+    Stream.Write response.Body
     
     ' Determine file name if not provided
     If InStr(FName, ".") = 0 Then
@@ -1797,7 +1797,7 @@ End Function
 ' Returns: Document name, or empty string on error
 '=======================================================
 Public Function GetAPIDocumentName(ByVal DocumentURL As String) As String
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -1811,17 +1811,17 @@ Public Function GetAPIDocumentName(ByVal DocumentURL As String) As String
     End If
     
     ' Get document metadata
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, DocumentURL)
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, DocumentURL)
     
     ' Extract filename
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, CurrentF, _
                  "Failed to get document name: " & DocumentURL
-    ElseIf Response.StatusCode = HTTP_OK Then
-        GetAPIDocumentName = Response.Data("file")("filename")
+    ElseIf response.StatusCode = HTTP_OK Then
+        GetAPIDocumentName = response.Data("file")("filename")
     Else
         WriteLog 3, CurrentMod, CurrentF, _
-                 "Failed to get document name: " & DocumentURL & " - " & Response.Content
+                 "Failed to get document name: " & DocumentURL & " - " & response.Content
     End If
     
     Exit Function
@@ -1838,19 +1838,19 @@ End Function
 ' Returns: Collection of color options, or Nothing on error
 '=======================================================
 Public Function GetAPIPostItNoteColors() As Collection
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, "/@types/postit_note")
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, "/@types/postit_note")
     
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, "GetAPIPostItNoteColors", "Failed to get colors"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        Set GetAPIPostItNoteColors = Response.Data("properties")("color")("choices")
+    ElseIf response.StatusCode = HTTP_OK Then
+        Set GetAPIPostItNoteColors = response.Data("properties")("color")("choices")
     Else
         WriteLog 3, CurrentMod, "GetAPIPostItNoteColors", _
-                 "Failed with status " & Response.StatusCode
+                 "Failed with status " & response.StatusCode
     End If
     
     Exit Function
@@ -1951,7 +1951,7 @@ Public Function CreateAPITask(ByVal Title As String, _
                              Optional ByVal Others As Collection = Nothing, _
                              Optional ByVal MeetingUID As String = vbNullString) As WebResponse
     
-    Dim Response As WebResponse
+    Dim response As WebResponse
     Dim Body As Dictionary
     Const filePath As String = "action-items"
     
@@ -1988,21 +1988,21 @@ Public Function CreateAPITask(ByVal Title As String, _
     Body.Add "assigned_to", Who
     
     ' Create task
-    Set Response = UseAPI(Body, WebMethod.HttpPost, filePath)
+    Set response = UseAPI(Body, WebMethod.HttpPost, filePath)
     
     ' Handle response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, CurrentF, "Failed to create task"
-    ElseIf Response.StatusCode = HTTP_CREATED Then
+    ElseIf response.StatusCode = HTTP_CREATED Then
         ' Update title
-        Call UpdateAPIContent(Response.Data("@id"), Array("title"), Array(Title))
-        Set CreateAPITask = Response
-    ElseIf Response.StatusCode = HTTP_UNAUTHORIZED Then
-        Set CreateAPITask = Response
+        Call UpdateAPIContent(response.Data("@id"), Array("title"), Array(Title))
+        Set CreateAPITask = response
+    ElseIf response.StatusCode = HTTP_UNAUTHORIZED Then
+        Set CreateAPITask = response
     Else
         WriteLog 3, CurrentMod, CurrentF, _
-                 "Failed with status " & Response.StatusCode
-        Set CreateAPITask = Response
+                 "Failed with status " & response.StatusCode
+        Set CreateAPITask = response
     End If
     
     Exit Function
@@ -2019,26 +2019,26 @@ End Function
 ' Returns: 2D array of priorities (title and token), or empty array on error
 '=======================================================
 Public Function GetTaskPriorities() As Variant
-    Dim Response As WebResponse
+    Dim response As WebResponse
     Dim Arr() As Variant
     Dim i As Long
     
     On Error GoTo ErrorHandler
     
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, _
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, _
                          "/@vocabularies/DocentIMS.ActionItems.PriorityVocabulary")
     
-    If Response Is Nothing Then
+    If response Is Nothing Then
         ReDim Arr(1 To 1, 1 To 1)
         Arr(1, 1) = "Failed to get task priorities"
         WriteLog 3, CurrentMod, "GetTaskPriorities", Arr(1, 1)
-    ElseIf Response.StatusCode = HTTP_OK Then
-        i = Response.Data("items").Count
+    ElseIf response.StatusCode = HTTP_OK Then
+        i = response.Data("items").Count
         If i > 0 Then
             ReDim Arr(1 To 2, 1 To i)
             For i = 1 To i
-                Arr(1, i) = Response.Data("items")(i)("title")
-                Arr(2, i) = Response.Data("items")(i)("token")
+                Arr(1, i) = response.Data("items")(i)("title")
+                Arr(2, i) = response.Data("items")(i)("token")
             Next i
         End If
     Else
@@ -2343,15 +2343,15 @@ End Sub
 ' Returns: Dictionary with meeting information
 '=======================================================
 Public Function GetParentMeetingObject(ByVal MeetingId As String) As Dictionary
-    Dim Response As Object
+    Dim response As Object
     Dim MeetingInfo As Dictionary
     
     On Error GoTo ErrorHandler
     
-    Set Response = GetAPIContent(MeetingId)
+    Set response = GetAPIContent(MeetingId)
     
-    If Not Response Is Nothing Then
-        Set MeetingInfo = Response.Data
+    If Not response Is Nothing Then
+        Set MeetingInfo = response.Data
         MeetingInfo.Add "MeetingDateTime", ToServerTime(CStr(MeetingInfo("start")))
         MeetingInfo.Add "MeetingShortName", _
                        MeetingInfo("title") & " - " & _
@@ -2382,7 +2382,7 @@ End Function
 ' Returns: WebResponse object
 '=======================================================
 Public Function UpdateAPIFileWorkflow(ByVal fileURL As String, _
-                                     ByVal TransitionID As String) As WebResponse
+                                     ByVal transitionID As String) As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -2395,18 +2395,18 @@ Public Function UpdateAPIFileWorkflow(ByVal fileURL As String, _
         Exit Function
     End If
     
-    If Len(TransitionID) = 0 Then
+    If Len(transitionID) = 0 Then
         WriteLog 3, CurrentMod, CurrentF, "Empty transition ID"
         Set UpdateAPIFileWorkflow = Nothing
         Exit Function
     End If
     
     ' Build transition URL
-    If InStr(TransitionID, "/@workflow/") > 0 Then
-        Set UpdateAPIFileWorkflow = UseAPI(Nothing, WebMethod.HttpPost, TransitionID)
+    If InStr(transitionID, "/@workflow/") > 0 Then
+        Set UpdateAPIFileWorkflow = UseAPI(Nothing, WebMethod.HttpPost, transitionID)
     Else
         Set UpdateAPIFileWorkflow = UseAPI(Nothing, WebMethod.HttpPost, _
-                                          fileURL & "/@workflow/" & TransitionID)
+                                          fileURL & "/@workflow/" & transitionID)
     End If
     
     Exit Function
@@ -2426,7 +2426,7 @@ End Function
 ' Returns: Collection of available transitions, or Nothing on error
 '=======================================================
 Public Function GetAPIFileWorkflowTransitions(ByVal DocURL As String) As Collection
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -2440,17 +2440,17 @@ Public Function GetAPIFileWorkflowTransitions(ByVal DocURL As String) As Collect
     End If
     
     ' Get workflow info
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/" & DocURL & "/@workflow")
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, "/noapi/" & DocURL & "/@workflow")
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, CurrentF, _
                  "Failed to get workflow transitions: " & DocURL
-    ElseIf Response.StatusCode = HTTP_OK Then
-        Set GetAPIFileWorkflowTransitions = Response.Data("transitions")
+    ElseIf response.StatusCode = HTTP_OK Then
+        Set GetAPIFileWorkflowTransitions = response.Data("transitions")
     Else
         WriteLog 3, CurrentMod, CurrentF, _
-                 "Failed to get workflow transitions: " & DocURL & " - " & Response.Content
+                 "Failed to get workflow transitions: " & DocURL & " - " & response.Content
     End If
     
     Exit Function
@@ -2474,7 +2474,7 @@ End Function
 ' Returns: Collection of project buttons/info
 '=======================================================
 Public Function GetProjectsList(ByVal mUser As String) As Collection
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -2491,17 +2491,17 @@ Public Function GetProjectsList(ByVal mUser As String) As Collection
     End If
     
     ' Get projects list
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, _
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, _
                          "/@dashboard_sites/?email=" & mUser, , DashboardURLStr)
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, "GetProjectsList", "Failed to get projects list"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        Set GetProjectsList = Response.Data("buttons")
+    ElseIf response.StatusCode = HTTP_OK Then
+        Set GetProjectsList = response.Data("buttons")
     Else
         WriteLog 3, CurrentMod, "GetProjectsList", _
-                 "Failed with status " & Response.StatusCode
+                 "Failed with status " & response.StatusCode
     End If
     
     Exit Function

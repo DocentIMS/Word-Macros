@@ -76,7 +76,7 @@ End Sub
 ' @param {WebRequest} Request The request that was just executed
 ' @param in|out {WebResponse} Response to request
 ''
-Private Sub IWebAuthenticator_AfterExecute(ByVal Client As WebClient, ByVal Request As WebRequest, ByRef Response As WebResponse)
+Private Sub IWebAuthenticator_AfterExecute(ByVal Client As WebClient, ByVal Request As WebRequest, ByRef response As WebResponse)
     ' e.g. Handle 401 Unauthorized or other issues
 End Sub
 

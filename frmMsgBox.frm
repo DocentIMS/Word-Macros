@@ -3,7 +3,7 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmMsgBox
    ClientHeight    =   3120
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   5025
+   ClientWidth     =   6180
    OleObjectBlob   =   "frmMsgBox.frx":0000
 End
 Attribute VB_Name = "frmMsgBox"
@@ -136,11 +136,11 @@ Private Sub ArrangeButtons(n As Long)
         Ctrl.WordWrap = False
         Ctrl.Top = mButtonsTop + mBtnHeight + 5 'Me.Height - 20
         Ctrl.Width = Space
-        Ctrl.Left = 10
         Ctrl.Caption = "Auto-Close in " & mAutocloseTimer & " seconds ..."
         Ctrl.Height = 20
-        Ctrl.Font.Size = 12
+        Ctrl.Font.Size = 10
         Ctrl.AutoSize = True
+        Ctrl.Left = Me.Width - Ctrl.Width - 10
     End If
     Me.Height = mButtonsTop + IIf(mBtnHeight = 0, 10, mBtnHeight) + IIf(mAutocloseTimer = -1, 0, 15) + 40
     If Me.Height < 65 Then Me.Height = 65
@@ -235,7 +235,7 @@ Private Sub Reset()
     mAutocloseTimer = 0
     iMax = 0
 End Sub
-Function Display(Msgs, Optional Buttons = "OK", Optional MsgType As NewMsgBoxStyle = Success, _
+Function Display(msgs, Optional Buttons = "OK", Optional MsgType As NewMsgBoxStyle = Success, _
                 Optional Title As String, Optional Clrs, Optional BackClrs, _
                 Optional Links, Optional ShowModal As FormShowConstants = vbModal, _
                 Optional Images, Optional AutoCloseTimer As Single = -1) As String
@@ -243,9 +243,9 @@ Function Display(Msgs, Optional Buttons = "OK", Optional MsgType As NewMsgBoxSty
     Dim i As Long, btnsCount As Long
     Reset
     mAutocloseTimer = AutoCloseTimer
-    Select Case TypeName(Msgs)
+    Select Case TypeName(msgs)
     Case "Variant()", "String()"
-        iMax = UBound(Msgs) - LBound(Msgs)
+        iMax = UBound(msgs) - LBound(msgs)
     End Select
     For i = 1 To iMax
         With Controls.Add("Forms.Label.1", "lb" & i + 1, True)
@@ -266,14 +266,14 @@ Function Display(Msgs, Optional Buttons = "OK", Optional MsgType As NewMsgBoxSty
     ReDim mBackClrs(0 To iMax) As String
     ReDim mImages(-1 To -1) As String
     
-    Select Case TypeName(Msgs)
+    Select Case TypeName(msgs)
     Case "Variant()", "String()"
-        For i = LBound(Msgs) To UBound(Msgs)
-            If IsMissing(Msgs(i)) Then Msgs(i) = ""
-            mMsgs(i - LBound(Msgs)) = Msgs(i)
+        For i = LBound(msgs) To UBound(msgs)
+            If IsMissing(msgs(i)) Then msgs(i) = ""
+            mMsgs(i - LBound(msgs)) = msgs(i)
         Next
     Case "String"
-        mMsgs(0) = Msgs
+        mMsgs(0) = msgs
     End Select
     
     

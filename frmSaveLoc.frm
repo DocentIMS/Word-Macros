@@ -57,7 +57,7 @@ Private Sub SaveLastChoices()
     
     If DisableEvents Then Exit Sub
     Set NewLocations = OldLocations
-    Dim DocLocs As New Dictionary, DocStates As New Dictionary, StatesChoices As Dictionary
+    Dim DocLocs As New Dictionary, docStates As New Dictionary, StatesChoices As Dictionary
     Dim DocCompLoc As Dictionary
     Dim i As Long, j As Long, IsMissed() As Boolean
     'Choices
@@ -81,9 +81,9 @@ Private Sub SaveLastChoices()
                 StatesChoices.Add ss(j), Controls("lv" & ss(j)).ListItems(i).Checked
             End If
         Next
-        DocStates.Add lvStates.ListItems(i).text, StatesChoices
+        docStates.Add lvStates.ListItems(i).text, StatesChoices
     Next
-    DocLocs.Add "States", DocStates
+    DocLocs.Add "States", docStates
     'Paths
 '    Set DocCompLoc = New Dictionary
 '    For j = LBound(ss) To UBound(ss)
@@ -152,7 +152,7 @@ Private Function GetWebLoc(DocType As String)
 End Function
 Private Sub LoadChoices()
     Dim i As Long, j As Long
-    Dim DocStates As Dictionary, DocLocs As Dictionary
+    Dim docStates As Dictionary, DocLocs As Dictionary
 '    If DisableEvents Then Exit Sub
 '    If cbProject.Value Like DDPlaceHolder & "*" Then Exit Sub
 '    If cbProject.Value Like "" Then Exit Sub
@@ -167,12 +167,12 @@ Private Sub LoadChoices()
 '    tbWeb.Value = GetWebLoc(cbDocumentType.Value)
     If (Not cbProject.value Like DDPlaceHolder & "*") And (cbProject.value <> "") Then tbNamingConv.value = DocumentsNameConvStr
     'States
-    Set DocStates = GetStatesOfDoc(cbDocumentType.value)
-    For i = 1 To DocStates.Count
-        lvStates.ListItems.Add , , DocStates(i)
+    Set docStates = GetStatesOfDoc(cbDocumentType.value)
+    For i = 1 To docStates.Count
+        lvStates.ListItems.Add , , docStates(i)
         For j = LBound(ss) To UBound(ss)
             Controls("lv" & ss(j)).ListItems.Add
-            If DocStates(i) = "Private" And j > LBound(ss) Then
+            If docStates(i) = "Private" And j > LBound(ss) Then
 '                Me.lvCustomer.ListItems(1).ListSubItems(0)..SubItems '= True '.Ghosted = True
                 Controls("lv" & ss(j)).ListItems(i).text = "  Not Allowed"
                 Controls("lv" & ss(j)).ListItems(i).ForeColor = vbRed
@@ -195,10 +195,10 @@ Private Sub LoadChoices()
     Next
     'States Choices
     'Set DocLocs = Nothing
-    If Not DocStates Is Nothing Then
+    If Not docStates Is Nothing Then
         Set DocLocs = DocLocs("States")
-        For i = 1 To DocStates.Count
-            If DocLocs.Exists(DocStates(i)) Then
+        For i = 1 To docStates.Count
+            If DocLocs.Exists(docStates(i)) Then
                 For j = LBound(ss) + 1 To UBound(ss)
                     Controls("lv" & ss(j)).ListItems(i).Checked = DocLocs(i)(ss(j))
                 Next

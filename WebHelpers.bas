@@ -526,23 +526,23 @@ End Sub
 ' @param {WebRequest} Request
 ' @param {WebResponse} Response
 ''
-Public Sub LogResponse(Client As WebClient, Request As WebRequest, Response As WebResponse)
+Public Sub LogResponse(Client As WebClient, Request As WebRequest, response As WebResponse)
     '@Ignore UnassignedVariableUsage
     If EnableLogging Then
         Dim web_KeyValue As Dictionary
 
         Debug.Print "<-- Response - " & Format$(Now, "Long Time")
-        Debug.Print Response.StatusCode & " " & Response.StatusDescription
+        Debug.Print response.StatusCode & " " & response.StatusDescription
 
-        For Each web_KeyValue In Response.Headers
+        For Each web_KeyValue In response.Headers
             Debug.Print web_KeyValue("Key") & ": " & web_KeyValue("Value")
         Next web_KeyValue
 
-        For Each web_KeyValue In Response.Cookies
+        For Each web_KeyValue In response.Cookies
             Debug.Print "Cookie: " & web_KeyValue("Key") & "=" & web_KeyValue("Value")
         Next web_KeyValue
 
-        Debug.Print vbNewLine & Response.Content & vbNewLine
+        Debug.Print vbNewLine & response.Content & vbNewLine
     End If
 End Sub
 

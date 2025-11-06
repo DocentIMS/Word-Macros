@@ -3,7 +3,7 @@ Option Explicit
 Option Compare Text
 Private Const CurrentMod = "CollectWords_mod"
 Private Arr() As Variant, i As Long
-Private ExcelApp As Object, rExcel As Long, OPath As String
+Private excelApp As Object, rExcel As Long, OPath As String
 'Private SDoc As Document
 Private Const MaxHdrLvl = -1 '0 = All, -2 = Docent Only
 'Private Const Set_SearchMode As Long
@@ -13,16 +13,16 @@ Private Const MaxHdrLvl = -1 '0 = All, -2 = Docent Only
 
 Sub CollectWords()
     WriteLog 1, CurrentMod, "CollectWords"
-    Dim x As Long, Msg As String
+    Dim x As Long, msg As String
     Dim t As Single, ts As String
     ReDim Arr(1 To 6, 1 To 1)
     i = 0
     t = Timer
     rExcel = 0
-    If Not ExcelApp Is Nothing Then
+    If Not excelApp Is Nothing Then
         On Error Resume Next
-        ExcelApp.Quit
-        Set ExcelApp = Nothing
+        excelApp.Quit
+        Set excelApp = Nothing
         On Error GoTo 0
     End If
     System.Cursor = wdCursorWait: DoEvents
@@ -73,7 +73,7 @@ Sub CollectWords()
         System.Cursor = wdCursorNormal: DoEvents
         DoEvents
         For x = 1 To Wrds.Count
-            Msg = Msg & vbNewLine & Wrds.Item(x).Count & " """ & Wrds.Item(x).Wrd & """ Statements were found"""
+            msg = msg & vbNewLine & Wrds.Item(x).Count & " """ & Wrds.Item(x).Wrd & """ Statements were found"""
             If x > 1 Then Wrds.Item(1).Count = Wrds.Item(1).Count + Wrds.Item(x).Count
         Next
         t = Timer - t
@@ -85,14 +85,14 @@ Sub CollectWords()
         ProgressBar.Finished
         WriteLog 1, CurrentMod, "CollectWords", Wrds.Item(1).Count & " Statements Exported"
         If Wrds.Item(1).Count = rExcel Then
-            frmMsgBox.Display Array("Process Completed" & vbNewLine & vbNewLine & Msg & vbNewLine & _
+            frmMsgBox.Display Array("Process Completed" & vbNewLine & vbNewLine & msg & vbNewLine & _
                             "-----------------------------------------" & vbNewLine & _
                             Wrds.Item(1).Count & " Total number of statements to track." & vbNewLine & _
                             rExcel & " Entries made in Excel" & vbNewLine, _
                             "-----------------------------------------" & vbNewLine & _
                             "Total processing time: " & ts), "Open Excel", , "Success", Array(0, 0, 0) '3057486
         Else
-            frmMsgBox.Display Array("Process Completed" & vbNewLine & vbNewLine & Msg & vbNewLine & _
+            frmMsgBox.Display Array("Process Completed" & vbNewLine & vbNewLine & msg & vbNewLine & _
                             "-----------------------------------------" & vbNewLine & _
                             Wrds.Item(1).Count & " Total number of statements to track." & vbNewLine & _
                             rExcel & " Entries made in Excel" & vbNewLine, _
@@ -111,7 +111,7 @@ Sub CollectWords()
 can:
         On Error Resume Next
         Unload ProgressBar
-        ExcelApp.Visible = True
+        excelApp.Visible = True
         CloseLog
     End If
 '    Debug.Print Timer - t
@@ -212,11 +212,11 @@ Private Sub ExportToExcel(Arr, Optional OFName As String)
     Dim i As Long, c As Long, r As Long, NArr, n As Long
     Dim WB As Object, Sh As Object, FName As String, x As Long
     On Error Resume Next
-    ExcelApp.Workbooks(FName).Close False
+    excelApp.Workbooks(FName).Close False
     On Error GoTo ex
     FName = GetFileName(SDoc.Name, False)
     FName = IIf(Len(OFName) = 0, FName & " - Export.xlsx", FName & ".xlsx")
-    Set WB = ExcelApp.Workbooks.Add
+    Set WB = excelApp.Workbooks.Add
     Set Sh = WB.Sheets(1)
     r = UBound(Arr) + 1
     c = 4
@@ -301,27 +301,27 @@ ex:
     WriteLog 3, CurrentMod, "ExportToExcel", Err.Number & ":" & Err.Description
     Exit Sub
 can:
-    ExcelApp.Quit
+    excelApp.Quit
 End Sub
 Private Sub toExcel(Arr, OFName As String)
     WriteLog 1, CurrentMod, "toExcel", "Exporting to Excel"
     Dim NArr
-    Set ExcelApp = CreateObject("Excel.Application")
-    ExcelApp.DisplayAlerts = False
-    ExcelApp.EnableEvents = False
+    Set excelApp = CreateObject("Excel.Application")
+    excelApp.DisplayAlerts = False
+    excelApp.EnableEvents = False
     NArr = Sort2DArray(Transpose(Arr), 5)
     If Set_Export Then ExportToExcel NArr
     ExportToExcel NArr, OFName
     On Error Resume Next
 '    ExcelApp.Cursor = -4143
-    ExcelApp.DisplayAlerts = True
-    ExcelApp.EnableEvents = True
+    excelApp.DisplayAlerts = True
+    excelApp.EnableEvents = True
     Exit Sub
 ex:
     WriteLog 3, CurrentMod, "toExcel", Err.Number & ":" & Err.Description
     Exit Sub
 can:
-    ExcelApp.Quit
+    excelApp.Quit
 End Sub
 Private Sub AddValidationOptions(Cell As Object, OptionsList As String)
     With Cell.validation

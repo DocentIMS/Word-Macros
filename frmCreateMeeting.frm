@@ -129,8 +129,8 @@ End Sub
 Private Sub btn_OK_Click()
     DoAction IIf(Len(mURL), "updated", "created")
 End Sub
-Private Sub DoAction(Action As String)
-    Dim Mtg As New Dictionary, Msg As String
+Private Sub DoAction(action As String)
+    Dim Mtg As New Dictionary, msgs(1 To 5) As String
     If Not ValidDates Then
         Evs.MarkInvalid "Ends"
         frmMsgBox.Display "The meeting end must be after the meeting start", , Critical, "Docent IMS"
@@ -161,15 +161,17 @@ Private Sub DoAction(Action As String)
         UpdateAPIFileWorkflow mURL, GetTransitionID("Retract", "meeting")
         oldState = GetStateID("Private", "meeting")
     End If
-    If cbState.value = "Published" And Action = "created" Then Mtg.Add "transition_target", "publish"
-    If Action = "created" Then
+    If cbState.value = "Published" And action = "created" Then Mtg.Add "transition_target", "publish"
+    If action = "created" Then
         Set Resp = CreateAPIContent("meeting", DefaultMeetingsFolder, Mtg.Keys, Mtg.Items)
         If IsGoodResponse(Resp) Then mURL = Resp.Data("@id")
     Else 'updated
         Set Resp = UpdateAPIContent(mURL, Mtg.Keys, Mtg.Items)
     End If
-    Msg = "The meeting was " & Action & " on " & ProjectNameStr & " site." ', , Success, "DocentIMS"
-    
+    msgs(1) = cbMeetingType.value & " was " & action & "." & vbNewLine & vbNewLine
+    'msgs(2) = "View Online" & vbNewLine & vbNewLine
+    msgs(3) = CollectInvitees(1).Count & " attendees notified" & vbNewLine & vbNewLine
+    msgs(4) = "Draft meeting agenda, notes and minutes created." & vbNewLine & vbNewLine
     
     
     If IsGoodResponse(Resp) Then
@@ -191,20 +193,21 @@ Private Sub DoAction(Action As String)
                         
             End With
             Me.Hide
-            frmMsgBox.Display Array(Msg & vbNewLine & vbNewLine, "View Online" & vbNewLine & vbNewLine, "The Zoom meeting was also " & Action), _
+            msgs(5) = "The Zoom meeting was also " & action
+            frmMsgBox.Display msgs, _
                         Array(), _
-                        Images:=Array(Success, , ZoomIcon), _
-                        Clrs:=Array(0, 0, 0), _
+                        Images:=Array(Success, , , , ZoomIcon), _
+                        Clrs:=Array(0, 0, 0, 0, 0), _
                         Title:="DocentIMS", _
-                        Links:=Array(, mURL), _
+                        Links:=Array(mURL), _
                         AutoCloseTimer:=3
         Else
-            frmMsgBox.Display Array(Msg, , , "View Online"), , Success, "DocentIMS", , , Array(, , , mURL)
+            frmMsgBox.Display msgs, , Success, "DocentIMS", , , Array(mURL)
         End If
 '        frmMsgBox.Display "A " & ProjectInfo("very_short_name") & " meeting was " & Action
         Unload Me
     Else
-        MsgBox "Meeting not " & Action, vbCritical, "Docent IMS"
+        frmMsgBox.Display "Meeting not " & action, Array(), Critical, "Docent IMS"
     End If
 End Sub
 Private Function CollectInvitees() As Dictionary
@@ -217,11 +220,12 @@ Private Function CollectInvitees() As Dictionary
         Dict.Add "email", EmailStr
         Coll.Add Dict, EmailStr
     Next
-    Set Dict = New Dictionary
-    EmailStr = tbExAtt.value
-    Dict.Add "email", EmailStr
-    Coll.Add Dict, EmailStr
-    
+    If Len(tbExAtt.value) Then
+        Set Dict = New Dictionary
+        EmailStr = tbExAtt.value
+        Dict.Add "email", EmailStr
+        Coll.Add Dict, EmailStr
+    End If
     If ck1Who Then
         Set IndColl = Nothing
         GroupsColl.Add "PrjTeam"
@@ -275,16 +279,16 @@ Private Function FakeRitchText(Ctrl As TextBox) As Dictionary
     FakeRitchText.Add "encoding", "utf-8"
 End Function
 Private Function GetItemsOf(Ctrl As ListBox) As Collection
-    Dim i As Long, UserID As String
+    Dim i As Long, userID As String
     On Error Resume Next
     Set GetItemsOf = New Collection
     For i = 0 To UBound(Ctrl.List)
         If Ctrl.Selected(i) Then
-            UserID = ""
-            UserID = Members(Ctrl.List(i))("id")
-            If Len(UserID) = 0 Then UserID = Groups(Ctrl.List(i))("id")
-            If Len(UserID) = 0 Then UserID = Ctrl.List(i)
-            GetItemsOf.Add UserID 'Ctrl.List(i)
+            userID = ""
+            userID = Members(Ctrl.List(i))("id")
+            If Len(userID) = 0 Then userID = Groups(Ctrl.List(i))("id")
+            If Len(userID) = 0 Then userID = Ctrl.List(i)
+            GetItemsOf.Add userID 'Ctrl.List(i)
         End If
     Next
 End Function
@@ -320,10 +324,10 @@ Private Sub cbMeetingType_Change()
 '        If Not SelectGroup(Coll(i)) Then SelectMember (Coll(i))
     Next
 End Sub
-Private Function SelectMember(MemberID) As Boolean
+Private Function SelectMember(memberID) As Boolean
     Dim i As Long
     For i = 0 To UBound(li3Who.List)
-        li3Who.Selected(i) = GetMemberID(li3Who.List(i)) = MemberID
+        li3Who.Selected(i) = GetMemberID(li3Who.List(i)) = memberID
         SelectMember = SelectMember Or li3Who.Selected(i)
     Next
 End Function

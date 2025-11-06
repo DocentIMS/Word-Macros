@@ -782,7 +782,7 @@ Private Sub IdButtonRefreshOnAction()
     frmMsgBox.Display "Please wait while projects are being updated...", Array(), None, ShowModal:=vbModeless
     RefreshRibbon True
     'UpdateAllProjectsInfo True
-    SetRegSelection GetFileName(GetActiveFName(ActiveDocument)), projectName(0), SelectedProject
+    SetRegSelection GetFileName(GetActiveFName(ActiveDocument)), projectName(0), selectedProject
     NewPNum = 0
     ProjectSelected ActiveDocument, 0, True ',pnum, True
     RefreshRibbon 'True

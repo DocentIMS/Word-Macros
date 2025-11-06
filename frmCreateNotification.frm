@@ -69,16 +69,16 @@ End Sub
 '            Controls("tb" & FldName & "Minutes").Value, 0)
 'End Function
 Private Function GetItemsOf(Ctrl As ListBox) As Collection
-    Dim i As Long, UserID As String
+    Dim i As Long, userID As String
     On Error Resume Next
     Set GetItemsOf = New Collection
     For i = 0 To UBound(Ctrl.List)
         If Ctrl.Selected(i) Then
-            UserID = ""
-            UserID = Members(Ctrl.List(i))("id")
-            If Len(UserID) = 0 Then UserID = Groups(Ctrl.List(i))("id")
-            If Len(UserID) = 0 Then UserID = Ctrl.List(i)
-            GetItemsOf.Add UserID 'Ctrl.List(i)
+            userID = ""
+            userID = Members(Ctrl.List(i))("id")
+            If Len(userID) = 0 Then userID = Groups(Ctrl.List(i))("id")
+            If Len(userID) = 0 Then userID = Ctrl.List(i)
+            GetItemsOf.Add userID 'Ctrl.List(i)
         End If
     Next
 End Function

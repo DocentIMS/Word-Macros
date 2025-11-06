@@ -19,11 +19,11 @@ Private Const CurrentMod = "frmServerFilesList"
 Private ListDup As New Collection
 Private ListNew As New Collection
 Private mMsg As String
-Function ShowList(Msg As String, Dups As Collection, News As Collection) As String
+Function ShowList(msg As String, Dups As Collection, News As Collection) As String
     WriteLog 1, CurrentMod, "DefineLists"
     Set ListDup = Dups
     Set ListNew = News
-    mMsg = Msg
+    mMsg = msg
     If ListNew.Count = 0 Then
         chListNews.Visible = False
         chListDuplicates.value = True

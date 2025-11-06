@@ -4,6 +4,13 @@ Option Compare Text
 Option Private Module
 Private Const CurrentMod = "AC_Ribbon_Functions_Mod" '"" '
 
+Private ErrShown As Boolean
+Private cProjectName As Variant
+Private cProjectURL As Variant
+Private cDocumentName As Variant
+Private cTemplateName As Variant
+Private RefreshFlag As Boolean
+
 '===========
 'Functions
 '===========
@@ -329,8 +336,6 @@ Private Function GetDocArr(Optional DocumentsMode As Long) As Variant
     End Select
 End Function
 Function GetDocumentsCount(Optional DocumentsMode As Long) As Long
-    Dim cDocumentName
-    cDocumentName = GetCachedDocumentName()
     cDocumentName = GetDocArr(DocumentsMode)
     If Not IsArrayAllocated(cDocumentName) Then
         LoadProjects
@@ -339,8 +344,7 @@ Function GetDocumentsCount(Optional DocumentsMode As Long) As Long
     GetDocumentsCount = UBound(cDocumentName) + 1
 End Function
 Function GetTemplatesCount() As Long
-    Dim cTemplateName
-    cTemplateName = GetCachedTemplateName()
+    cTemplateName = templateName
     If Not IsArrayAllocated(cTemplateName) Then
         LoadProjects
         cTemplateName = templateName
@@ -352,8 +356,8 @@ Function GetSelectedTemplateIndex() As Long
     WriteLog 1, CurrentMod, "GetSelectedTemplateIndex"
     On Error Resume Next
     FName = GetActiveFName(ActiveDocument)
-    If FName <> "" And RibbonRefreshFlag Then
-        RibbonRefreshFlag = False
+    If FName <> "" And RefreshFlag Then
+        RefreshFlag = False
         Index = TemplateNum
 '        DocName = GetProperty(pDocType)
 '        If Len(DocName) Then
@@ -379,7 +383,7 @@ Sub SetSelectedTemplateIndex(Index As Integer)
 '    End If
     TemplateNum = Index
     PrintView
-    RibbonRefreshFlag = True
+    RefreshFlag = True
     RefreshTemplatesGroup
 '    RefreshDocumentGroup
 '    On Error GoTo 0
@@ -401,10 +405,10 @@ Function GetSelectedProjectIndex() As Long
 '    Else
     If GetProperty(pIsDocument) Then
         'If FName = "Blank" Then FName = GenDocName("")
-'        RibbonRefreshFlag = False
+'        RefreshFlag = False
         PURL = GetProperty(pPURL)
         PNum = GetProjectIndexByURL(PURL, projectURL)
-        SetRegSelection FName, PURL, SelectedProject
+        SetRegSelection FName, PURL, selectedProject
         ProjectSelected Doc, PNum, True
         Index = 0
     Else
@@ -416,17 +420,17 @@ ex:
 '        Case "Blank", "Nothing"
 ''        Case "Blank" ', "Nothing"
 ''            SetRegLastSelectedP FName & "_ProjectName", ProjectName(0)
-''            RibbonRefreshFlag = False
+''            RefreshFlag = False
 ''        Case "Nothing"
-''            RibbonRefreshFlag = False
+''            RefreshFlag = False
 '        Case Else
-            RibbonRefreshFlag = Len(FName) > 0 'FName <> "Blank" '
+            RefreshFlag = Len(FName) > 0 'FName <> "Blank" '
 '        End Select
 '        Debug.Print FName
         'Stop
-            Index = GetProjectIndexByURL(GetRegSelection(FName, SelectedProject))
-        If RibbonRefreshFlag Then  '
-            RibbonRefreshFlag = False
+            Index = GetProjectIndexByURL(GetRegSelection(FName, selectedProject))
+        If RefreshFlag Then  '
+            RefreshFlag = False
             NotScopeAsked.Remove FName
             NotScopeAsked.Add False, FName
 '            Invalidate "IdDDProject"
@@ -453,8 +457,6 @@ Function GetProjectNameByIndex(Optional Index) As String
     If GetProjectNameByIndex Like "Select *" Then GetProjectNameByIndex = ""
 End Function
 Function GetProjectURLByIndex(Optional Index) As String
-    Dim cProjectURL
-    cProjectURL = GetCachedProjectURL()
     On Error Resume Next
     GetProjectURLByIndex = cProjectURL(Index)
     If GetProjectURLByIndex Like "Select *" Then GetProjectURLByIndex = ""
@@ -470,7 +472,7 @@ Function GetProjectIndexByIndex(Optional Index) As Long
 End Function
 Function GetProjectIndexByName(Optional PName As String, Optional mProjectName) As Long
     On Error GoTo ex
-    If IsMissing(mProjectName) Then mProjectName = GetCachedProjectName()
+    If IsMissing(mProjectName) Then mProjectName = cProjectName
     If Len(PName) = 0 Then PName = GetProperty(pPName)
     If Len(PName) = 0 Then Exit Function
     For GetProjectIndexByName = 0 To UBound(mProjectName)
@@ -481,7 +483,7 @@ ex:
 End Function
 Function GetProjectIndexByURL(Optional PURL As String, Optional mProjectURL) As Long
     On Error GoTo ex
-    If IsMissing(mProjectURL) Then mProjectURL = GetCachedProjectURL()
+    If IsMissing(mProjectURL) Then mProjectURL = cProjectURL
     If Len(PURL) = 0 Then PURL = GetProperty(pPURL)
     If Len(PURL) = 0 Then Exit Function
     For GetProjectIndexByURL = 0 To UBound(mProjectURL)
@@ -491,11 +493,8 @@ Function GetProjectIndexByURL(Optional PURL As String, Optional mProjectURL) As 
 ex:
 End Function
 Sub SetSelectedProjectIndex(Index)
-    
     'stop'test
     WriteLog 1, CurrentMod, "SetSelectedProjectIndex"
-    Dim cProjectURL
-    cProjectURL = GetCachedProjectURL()
     Dim FName As String, Doc As Document, PURL As String ', PName As String
     On Error Resume Next
     Set Doc = ActiveDocument
@@ -505,11 +504,11 @@ Sub SetSelectedProjectIndex(Index)
     PURL = cProjectURL(Index)
     If Len(FName) > 0 Then
 '        SetProperty "docentProject", cProjectName(index)
-        SetRegSelection FName, PURL, SelectedProject
+        SetRegSelection FName, PURL, selectedProject
     End If
     PrintView
 '    On Error GoTo 0
-    RibbonRefreshFlag = True
+    RefreshFlag = True
     NewPNum = Index
 '    ProjectSelected Doc, GetProjectIndexByName(PName) 'CLng(Index)
     RefreshProject  'Ribbon ' 'Invalidate "IdDDProject"
@@ -543,8 +542,6 @@ Function IsProjectSelected(Optional SilentMode As Boolean) As Boolean
 ex:
 End Function
 Function OpenSelectedTemplate()
-    Dim cTemplateName
-    cTemplateName = GetCachedTemplateName
     OpenTemplate CStr(cTemplateName(TemplateNum)), True
 End Function
 '-----MeetingDoc---------
@@ -553,8 +550,8 @@ Function GetSelectedMeetingDocIndex() As Long
     WriteLog 1, CurrentMod, "GetSelectedMeetingDocIndex"
     On Error Resume Next
     FName = GetActiveFName(ActiveDocument)
-    If FName <> "" And RibbonRefreshFlag Then
-        RibbonRefreshFlag = False
+    If FName <> "" And RefreshFlag Then
+        RefreshFlag = False
         DocName = GetProperty(pDocType)
         If Len(DocName) Then
             For Index = 1 To UBound(MeetingDocName)
@@ -582,7 +579,7 @@ Sub SetSelectedMeetingDocIndex(Index As Integer)
     End If
     MeetingDocNum = Index
     PrintView
-    RibbonRefreshFlag = True
+    RefreshFlag = True
     RefreshMeetingDocButtons
 '    On Error GoTo 0
 '    DoEvents
@@ -593,8 +590,8 @@ Function GetSelectedDocumentIndex() As Long
     WriteLog 1, CurrentMod, "GetSelectedDocumentIndex"
     On Error Resume Next
     FName = GetActiveFName(ActiveDocument)
-    If FName <> "" And RibbonRefreshFlag Then
-        RibbonRefreshFlag = False
+    If FName <> "" And RefreshFlag Then
+        RefreshFlag = False
         DocName = GetProperty(pDocType)
         If Len(DocName) Then
             For Index = 1 To UBound(documentName)
@@ -622,7 +619,7 @@ Sub SetSelectedDocumentIndex(Index As Integer)
     End If
     DocNum = Index
     PrintView
-    RibbonRefreshFlag = True
+    RefreshFlag = True
     RefreshDocumentGroup
 '    On Error GoTo 0
 '    DoEvents
@@ -762,7 +759,6 @@ Sub ProjectSelected(Doc As Document, SelectedItem As Long, Optional Force As Boo
 '    IsAuthorized = IsValidUser = "OK"
     AskForMissingPw = True
     LoadProjectInfoReg PName
-    UpdateRibbonCache PName, ProjectURLStr, "", ""
     If CodeIsRunning Then Doc.Saved = True
     RefreshProject
     If Len(ProjectNameStr) And LastPName <> ProjectNameStr Then
@@ -802,3 +798,5 @@ Function ApplyTransitionNo(i As Long, Doc As Document)
     If Doc.Name = "" Then Exit Function
     If IsProjectSelected Then UploadDoc ActiveDocument, Replace(NextTransitions(i)("@id"), "FILEURl", GetProperty(pDocURL, Doc)) 'GetStateFromTrn(NextTransitions(3))
 End Function
+
+

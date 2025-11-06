@@ -132,7 +132,7 @@ End Function
 ' Returns: Dictionary with meeting details, or Nothing on error
 '=======================================================
 Public Function GetZoomMtg(ByVal ID As String) As Dictionary
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -149,18 +149,18 @@ Public Function GetZoomMtg(ByVal ID As String) As Dictionary
     If ZoomToken Is Nothing Then Set ZoomToken = New BearerToken
     
     ' Get meeting details
-    Set Response = UseAPI(Nothing, HttpGet, DblEncode(ID), "/meetings/", _
+    Set response = UseAPI(Nothing, HttpGet, DblEncode(ID), "/meetings/", _
                          ZoomAPI, , ZoomToken.Token, , , "Bearer")
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, "GetZoomMtg", "Failed to get meeting"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        Set GetZoomMtg = Response.Data
+    ElseIf response.StatusCode = HTTP_OK Then
+        Set GetZoomMtg = response.Data
         WriteLog 1, CurrentMod, "GetZoomMtg", "Meeting retrieved successfully"
     Else
         WriteLog 3, CurrentMod, "GetZoomMtg", _
-                 "Failed with status: " & Response.StatusCode
+                 "Failed with status: " & response.StatusCode
     End If
     
     Exit Function
@@ -213,7 +213,7 @@ End Function
 ' Returns: Dictionary with past meeting details, or Nothing on error
 '=======================================================
 Public Function GetPastMeeting(ByVal ID As String) As Dictionary
-    Dim Response As WebResponse
+    Dim response As WebResponse
     Dim Coll As Collection
     
     On Error GoTo ErrorHandler
@@ -249,18 +249,18 @@ Public Function GetPastMeeting(ByVal ID As String) As Dictionary
     End If
     
     ' Get past meeting details
-    Set Response = UseAPI(Nothing, HttpGet, DblEncode(ID), "/past_meetings/", _
+    Set response = UseAPI(Nothing, HttpGet, DblEncode(ID), "/past_meetings/", _
                          ZoomAPI, , ZoomToken.Token, , , "Bearer")
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, "GetPastMeeting", "Failed to get past meeting"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        Set GetPastMeeting = Response.Data
+    ElseIf response.StatusCode = HTTP_OK Then
+        Set GetPastMeeting = response.Data
         WriteLog 1, CurrentMod, "GetPastMeeting", "Past meeting retrieved successfully"
     Else
         WriteLog 3, CurrentMod, "GetPastMeeting", _
-                 "Failed with status: " & Response.StatusCode
+                 "Failed with status: " & response.StatusCode
     End If
     
     Exit Function
@@ -281,7 +281,7 @@ End Function
 ' Returns: Collection of past meeting instances, or Nothing on error
 '=======================================================
 Public Function GetPastMeetings(ByVal ID As String) As Collection
-    Dim Response As WebResponse
+    Dim response As WebResponse
     Dim QueryParams As Dictionary
     
     On Error GoTo ErrorHandler
@@ -302,15 +302,15 @@ Public Function GetPastMeetings(ByVal ID As String) As Collection
     Set QueryParams = CreateBody(Array("page_size", "type"), Array(100, "past"))
     
     ' Get past meeting instances
-    Set Response = UseAPI(QueryParams, HttpGet, DblEncode(ID) & "/instances", _
+    Set response = UseAPI(QueryParams, HttpGet, DblEncode(ID) & "/instances", _
                          "/past_meetings/", ZoomAPI, , ZoomToken.Token, , , "Bearer")
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, "GetPastMeetings", "Failed to get past meetings"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        If Response.Data.Exists("meetings") Then
-            Set GetPastMeetings = Response.Data("meetings")
+    ElseIf response.StatusCode = HTTP_OK Then
+        If response.Data.Exists("meetings") Then
+            Set GetPastMeetings = response.Data("meetings")
             WriteLog 1, CurrentMod, "GetPastMeetings", _
                      "Retrieved " & GetPastMeetings.Count & " past meetings"
         Else
@@ -319,7 +319,7 @@ Public Function GetPastMeetings(ByVal ID As String) As Collection
         End If
     Else
         WriteLog 3, CurrentMod, "GetPastMeetings", _
-                 "Failed with status: " & Response.StatusCode
+                 "Failed with status: " & response.StatusCode
     End If
     
     Exit Function
@@ -337,7 +337,7 @@ End Function
 ' Returns: Collection of templates, or Nothing on error
 '=======================================================
 Public Function GetZoomTemplates() As Collection
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     On Error GoTo ErrorHandler
     
@@ -347,15 +347,15 @@ Public Function GetZoomTemplates() As Collection
     If ZoomToken Is Nothing Then Set ZoomToken = New BearerToken
     
     ' Get templates
-    Set Response = UseAPI(Nothing, HttpGet, "meeting_templates", "/users/me/", _
+    Set response = UseAPI(Nothing, HttpGet, "meeting_templates", "/users/me/", _
                          ZoomAPI, , ZoomToken.Token, , , "Bearer")
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, "GetZoomTemplates", "Failed to get templates"
-    ElseIf Response.StatusCode = HTTP_OK Then
-        If Response.Data.Exists("templates") Then
-            Set GetZoomTemplates = Response.Data("templates")
+    ElseIf response.StatusCode = HTTP_OK Then
+        If response.Data.Exists("templates") Then
+            Set GetZoomTemplates = response.Data("templates")
             WriteLog 1, CurrentMod, "GetZoomTemplates", _
                      "Retrieved " & GetZoomTemplates.Count & " templates"
         Else
@@ -364,7 +364,7 @@ Public Function GetZoomTemplates() As Collection
         End If
     Else
         WriteLog 3, CurrentMod, "GetZoomTemplates", _
-                 "Failed with status: " & Response.StatusCode
+                 "Failed with status: " & response.StatusCode
     End If
     
     Exit Function
@@ -385,7 +385,7 @@ End Function
 ' Returns: Collection of participants who were "in_meeting", or Nothing on error
 '=======================================================
 Public Function GetZoomAttList(ByVal ID As String) As Collection
-    Dim Response As WebResponse
+    Dim response As WebResponse
     Dim QueryParams As Dictionary
     Dim Coll As Collection
     Dim AColl As Collection
@@ -409,26 +409,26 @@ Public Function GetZoomAttList(ByVal ID As String) As Collection
     Set QueryParams = CreateBody(Array("page_size"), Array(100))
     
     ' Get participant report
-    Set Response = UseAPI(QueryParams, HttpGet, DblEncode(ID) & "/participants", _
+    Set response = UseAPI(QueryParams, HttpGet, DblEncode(ID) & "/participants", _
                          "/report/meetings/", ZoomAPI, , ZoomToken.Token, , , "Bearer")
     
     ' Process response
-    If Response Is Nothing Then
+    If response Is Nothing Then
         WriteLog 3, CurrentMod, "GetZoomAttList", "Failed to get attendance list"
         Set GetZoomAttList = Nothing
         Exit Function
     End If
     
-    If Response.StatusCode <> HTTP_OK Then
+    If response.StatusCode <> HTTP_OK Then
         WriteLog 3, CurrentMod, "GetZoomAttList", _
-                 "Failed with status: " & Response.StatusCode
+                 "Failed with status: " & response.StatusCode
         Set GetZoomAttList = Nothing
         Exit Function
     End If
     
     ' Filter participants who were in meeting
-    If Response.Data.Exists("participants") Then
-        Set Coll = Response.Data("participants")
+    If response.Data.Exists("participants") Then
+        Set Coll = response.Data("participants")
         Set AColl = New Collection
         
         For i = 1 To Coll.Count

@@ -236,7 +236,7 @@ End Sub
 '=======================================================
 Private Sub TestAPIIntegration()
     Dim testName As String
-    Dim Response As WebResponse
+    Dim response As WebResponse
     
     testName = "API Integration"
     
@@ -244,7 +244,7 @@ Private Sub TestAPIIntegration()
     
     ' Test that UseAPI can be called without errors
     ' Note: This may fail due to network/credentials, but shouldn't crash
-    Set Response = UseAPI(Nothing, WebMethod.HttpGet, "@types")
+    Set response = UseAPI(Nothing, WebMethod.HttpGet, "@types")
     
     ' If we get here without crashing, integration is working
     LogTestResult testName, True, "UseAPI function executed"

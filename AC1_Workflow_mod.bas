@@ -62,14 +62,14 @@ Function GetStateTransitions(Optional ByVal StateNameOrID As String, Optional By
         GetStateTransitions.Add , WorkflowInfo(1)(TypeNum)("workflow_states")(StateNum)("transitions")(TransitionNum)
     Next
 End Function
-Function GetTransitionDestination(ByVal TransitionID As String, ByVal DocType As String, Optional ByVal TypeNum As Long) As String
+Function GetTransitionDestination(ByVal transitionID As String, ByVal DocType As String, Optional ByVal TypeNum As Long) As String
     Dim TransitionNum As Long, NewStateID As String
-    If InStr(TransitionID, "@workflow") Then TransitionID = GetFileName(TransitionID)
+    If InStr(transitionID, "@workflow") Then transitionID = GetFileName(transitionID)
     'If Len(DocType) = 0 Then DocType = DocumentName(DocNum)
     TypeNum = GetTypeNum(DocType)
     If TypeNum = 0 Then Exit Function
     For TransitionNum = 1 To WorkflowInfo(1)(TypeNum)("workflow_transitions").Count
-        If WorkflowInfo(1)(TypeNum)("workflow_transitions")(TransitionNum)("id") = TransitionID Then
+        If WorkflowInfo(1)(TypeNum)("workflow_transitions")(TransitionNum)("id") = transitionID Then
             GetTransitionDestination = WorkflowInfo(1)(TypeNum)("workflow_transitions")(TransitionNum)("new_state_id")
             GetTransitionDestination = GetStateName(GetTransitionDestination, DocType, TypeNum)
             Exit For
@@ -102,11 +102,11 @@ Function GetStateID(ByVal StateName As String, Optional ByVal DocType As String,
     StateNum = GetStateNum(StateName, DocType, TypeNum)
     GetStateID = WorkflowInfo(1)(TypeNum)("workflow_states")(StateNum)("id")
 End Function
-Function GetTransitionName(ByVal TransitionID As String, Optional ByVal DocType As String, Optional ByVal TypeNum As Long) As String
+Function GetTransitionName(ByVal transitionID As String, Optional ByVal DocType As String, Optional ByVal TypeNum As Long) As String
     Dim TransitionNum As Long
     If TypeNum = 0 Then TypeNum = GetTypeNum(DocType)
     If TypeNum = 0 Then Exit Function
-    TransitionNum = GetTransitionNum(TransitionID, DocType, TypeNum)
+    TransitionNum = GetTransitionNum(transitionID, DocType, TypeNum)
     GetTransitionName = WorkflowInfo(1)(TypeNum)("workflow_transitions")(TransitionNum)("title")
 End Function
 Function GetTransitionID(ByVal TransitionName As String, Optional ByVal DocType As String, Optional ByVal TypeNum As Long) As String
