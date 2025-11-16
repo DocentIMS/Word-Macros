@@ -10,4 +10,4 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public Range As Range
-Public TaskNum As String
+Public taskNum As String

@@ -57,7 +57,7 @@ Private Sub Control_Click()
     End Select
 End Sub
 Private Sub Control_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal x As Single, ByVal Y As Single)
-    Dim i As Byte, PreFix As String, xMax As Long, xMin As Long, yMax As Long, yMin As Long
+    Dim i As Byte, Prefix As String, xMax As Long, xMin As Long, yMax As Long, yMin As Long
     Select Case control.Name
     Case "lblTitleCurMY", "lblUP", "lblDOWN", "lblUnload", "lblThemes"
         xMax = 68: xMin = 2: yMax = 10: yMin = 2
@@ -67,12 +67,12 @@ Private Sub Control_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, B
             control.ForeColor = RGB(73, 255, 60)
         End If
     Case Else
-        PreFix = Left$(control.Name, 1)
-        Select Case PreFix
+        Prefix = Left$(control.Name, 1)
+        Select Case Prefix
         Case "W"
             i = 0
             xMax = Day_Xmax: xMin = Day_Xmin: yMax = Day_Ymax: yMin = Day_Ymin
-            PreFix = "WD"
+            Prefix = "WD"
         Case "D"
             i = Right$(control.Name, Len(control.Name) - 1)
             xMax = Day_Xmax: xMin = Day_Xmin: yMax = Day_Ymax: yMin = Day_Ymin
@@ -84,17 +84,17 @@ Private Sub Control_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, B
             control.BorderStyle = fmBorderStyleNone
         Else
             control.BorderStyle = fmBorderStyleSingle
-            NoBorder i, PreFix
+            NoBorder i, Prefix
         End If
     End Select
 End Sub
-Sub NoBorder(SkipLabel As Byte, PreFix As String)
+Sub NoBorder(SkipLabel As Byte, Prefix As String)
     Dim D As Byte, ObjCnt As Byte
-    Select Case PreFix
+    Select Case Prefix
     Case "D", "W": ObjCnt = 42
     Case "M", "Y": ObjCnt = 12
     End Select
     For D = 1 To ObjCnt
-        If D <> SkipLabel Then Parent.Controls(PreFix & D).BorderStyle = fmBorderStyleNone
+        If D <> SkipLabel Then Parent.Controls(Prefix & D).BorderStyle = fmBorderStyleNone
     Next
 End Sub

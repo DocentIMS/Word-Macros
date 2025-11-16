@@ -1,8 +1,8 @@
-Attribute VB_Name = "Ribbon_Manager_Mod"
+Attribute VB_Name = "Ribbon_Manager"
 Option Explicit
 
 '=======================================================
-' Module: Ribbon_Manager_Mod
+' Module: Ribbon_Manager
 ' Purpose: Manager/Team mode toggle button ribbon handlers
 ' Author: Docent IMS Team
 ' Version: 2.0
@@ -40,7 +40,7 @@ Option Explicit
 '=======================================================
 
 ' Module constants
-Private Const CurrentMod As String = "Ribbon_Manager_Mod"
+Private Const CurrentMod As String = "Ribbon_Manager"
 
 '=======================================================
 ' Function: IdToggleButtonMgrModeGetVisible

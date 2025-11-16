@@ -18,7 +18,7 @@ Private Const CurrentMod = "frmAbout"
 #If VBA7 Then
     Private Declare PtrSafe Function ShellExecute _
         Lib "shell32.dll" Alias "ShellExecuteA" ( _
-        ByVal hwnd As Long, _
+        ByVal hWnd As Long, _
         ByVal Operation As String, _
         ByVal fileName As String, _
         Optional ByVal Parameters As String, _

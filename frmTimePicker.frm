@@ -20,7 +20,7 @@ Property Let CCName(ContentControlName As String)
     mCCName = ContentControlName
 End Property
 Private Sub btnSave_Click()
-    SetContentControl mCCName, Format(TimeSerial(tbhTime + IIf(cbttTime.value = "AM", 0, 12), tbmTime, 0), TimeFormat)
+    SetContentControl mCCName, Format(TimeSerial(tbhTime + IIf(cbttTime.value = "AM", 0, 12), tbmTime, 0), timeFormat)
     Unload Me
 End Sub
 'Private Sub sbHours_Change()

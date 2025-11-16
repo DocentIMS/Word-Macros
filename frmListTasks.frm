@@ -304,7 +304,7 @@ Private Sub DictectOlds()
 '    Set Rng = ActiveDocument.Range
     With Tbl 'Last Table in the document (?)
         For r = 3 To .Rows.Count
-            CellTxt = CellText(.Rows(r).Cells(2).Range.text)
+            CellTxt = cellText(.Rows(r).Cells(2).Range.text)
             OldItems.Add "_" & CellTxt, CellTxt
         Next
     End With

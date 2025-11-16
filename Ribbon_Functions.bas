@@ -1,8 +1,8 @@
-Attribute VB_Name = "Ribbon_Functions_Mod"
+Attribute VB_Name = "Ribbon_Functions"
 Option Explicit
 Option Compare Text
 Option Private Module
-Private Const CurrentMod = "AC_Ribbon_Functions_Mod" '"" '
+Private Const CurrentMod = "Ribbon_Functions" '"" '
 
 Private ErrShown As Boolean
 Private cProjectName As Variant

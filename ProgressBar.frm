@@ -75,7 +75,7 @@ Private Sub AddProgressBar(n As Long)
     Ctrl.Width = frmRatio0.Width
     Ctrl.Top = frmRatio0.Top + (BetweenLevels * (mBarsCount - n))
     Ctrl.BorderStyle = frmRatio0.BorderStyle
-    Ctrl.BorderColor = frmRatio0.BorderColor
+    Ctrl.borderColor = frmRatio0.borderColor
     Ctrl.BackStyle = frmRatio0.BackStyle
     Ctrl.Enabled = False
     Ctrl.Height = frmRatio0.Height

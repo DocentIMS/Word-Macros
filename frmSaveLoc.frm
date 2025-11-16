@@ -118,11 +118,11 @@ Private Sub ClearAll(Optional Level As Long = 0)
 '        cbProject.Clear
 '        cbProject.AddItem "-- Choose Project --"
         On Error Resume Next
-        i = UBound(projectName)
+        i = UBound(ProjectName)
         On Error GoTo 0
         If i = 0 Then RefreshRibbon
-        For i = 1 To UBound(projectName)
-            cbProject.AddItem projectName(i)
+        For i = 1 To UBound(ProjectName)
+            cbProject.AddItem ProjectName(i)
         Next
         cbProject.ListIndex = 0
         Exit Sub

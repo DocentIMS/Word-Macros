@@ -2682,7 +2682,7 @@ Private Function json_StringIsLargeNumber(json_String As Variant) As Boolean
     End If
 End Function
 
-Private Function json_ParseErrorMessage(json_String As String, ByRef json_Index As Long, ErrorMessage As String)
+Private Function json_ParseErrorMessage(json_String As String, ByRef json_Index As Long, errorMessage As String)
     ' Provide detailed parse error message, including details of where and what occurred
     '
     ' Example:
@@ -2707,7 +2707,7 @@ Private Function json_ParseErrorMessage(json_String As String, ByRef json_Index 
     json_ParseErrorMessage = "Error parsing JSON:" & VBA.vbNewLine & _
         VBA.Mid$(json_String, json_StartIndex, json_StopIndex - json_StartIndex + 1) & VBA.vbNewLine & _
         VBA.Space$(json_Index - json_StartIndex) & "^" & VBA.vbNewLine & _
-        ErrorMessage
+        errorMessage
 End Function
 
 Private Sub json_BufferAppend(ByRef json_Buffer As String, _

@@ -58,12 +58,12 @@ Private Sub btnOk_Click()
     On Error Resume Next
     If OldTypes.Exists(cbMeetingType.value) Then
         For i = Tbl.Rows.Count To 1 Step -1
-            If CellText(Tbl.Cell(i, 1)) = cbMeetingType.value Then
+            If cellText(Tbl.Cell(i, 1)) = cbMeetingType.value Then
                 If Err.Number Then
                     Err.Clear
                 Else
                     Tbl.Cell(i, 7).Delete wdDeleteCellsEntireRow
-                    Do While CellText(Tbl.Cell(i, 1)) = ""
+                    Do While cellText(Tbl.Cell(i, 1)) = ""
                         Tbl.Cell(i, 7).Delete wdDeleteCellsEntireRow
                         If i > Tbl.Rows.Count Then Exit Do
                     Loop
@@ -129,7 +129,7 @@ Sub Display()
     Set OldTypes = New Dictionary
     On Error Resume Next
     For i = 1 To Tbl.Rows.Count
-        s = CellText(Tbl.Cell(i, 1))
+        s = cellText(Tbl.Cell(i, 1))
         OldTypes.Add s, s
     Next
     Update_btnAddAtt

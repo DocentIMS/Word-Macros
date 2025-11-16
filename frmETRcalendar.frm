@@ -88,7 +88,7 @@ Public Property Let Caltheme(Theme As CalendarThemes)
     lblTitleCurDt.ForeColor = CurDateColor
         
     lblTitleCurMY.ForeColor = MyForeColor
-    lblTitleCurMY.BorderColor = MyForeColor
+    lblTitleCurMY.borderColor = MyForeColor
         
     lblTitleClock.ForeColor = MyForeColor
     lblTitleAMPM.ForeColor = MyForeColor
@@ -101,7 +101,7 @@ Public Property Let Caltheme(Theme As CalendarThemes)
     For i = 1 To 42
         With Me.Controls("D" & i)
             .ForeColor = MyForeColor
-            .BorderColor = MyForeColor
+            .borderColor = MyForeColor
         End With
     Next i
     '--> Weekdays
@@ -114,14 +114,14 @@ Public Property Let Caltheme(Theme As CalendarThemes)
     For i = 1 To 12
         With Me.Controls("M" & i)
             .ForeColor = MyForeColor
-            .BorderColor = MyForeColor
+            .borderColor = MyForeColor
         End With
     Next i
     '--> Year
     For i = 1 To 12
         With Me.Controls("Y" & i)
             .ForeColor = MyForeColor
-            .BorderColor = MyForeColor
+            .borderColor = MyForeColor
         End With
     Next i
     '--> Populate this months calendar

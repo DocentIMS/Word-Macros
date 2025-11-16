@@ -439,7 +439,7 @@ Private Property Let BackColor(clr)
             mCtrl.SpecialEffect = 3
         Else
             mCtrl.BorderStyle = 1
-            mCtrl.BorderColor = clr
+            mCtrl.borderColor = clr
         End If
 '    Case "ListView"
 '        mCtrl.BorderStyle = IIf(Clr = ValidBackColor, 0, 1)

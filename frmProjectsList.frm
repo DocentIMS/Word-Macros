@@ -376,7 +376,7 @@ Private Sub EditProject(ByVal mPName As String)
     WriteLog 1, CurrentMod, PROC_NAME, "Editing project: " & mPName
     
     ' Validate arrays
-    If Not IsArray(projectName) Then
+    If Not IsArray(ProjectName) Then
         errorMsg = "Project array not initialized"
         WriteLog 3, CurrentMod, PROC_NAME, errorMsg
         MsgBox "Project configuration error. Please restart.", vbCritical, "Error"
@@ -385,8 +385,8 @@ Private Sub EditProject(ByVal mPName As String)
     
     ' Find project in array
     foundProject = False
-    For i = 1 To UBound(projectName)
-        If projectName(i) = mPName Then
+    For i = 1 To UBound(ProjectName)
+        If ProjectName(i) = mPName Then
             foundProject = True
             
             ' Open login form with existing credentials
@@ -450,7 +450,7 @@ Private Sub UpdateProject(ByVal mPName As String)
     WriteLog 1, CurrentMod, PROC_NAME, "Updating project: " & mPName
     
     ' Validate arrays
-    If Not IsArray(projectName) Then
+    If Not IsArray(ProjectName) Then
         errorMsg = "Project array not initialized"
         WriteLog 3, CurrentMod, PROC_NAME, errorMsg
         Exit Sub
@@ -458,8 +458,8 @@ Private Sub UpdateProject(ByVal mPName As String)
     
     ' Find and update project
     foundProject = False
-    For i = 1 To UBound(projectName)
-        If projectName(i) = mPName Then
+    For i = 1 To UBound(ProjectName)
+        If ProjectName(i) = mPName Then
             foundProject = True
             
             ' Download fresh project info
@@ -551,16 +551,16 @@ Private Sub RefreshList()
     Call LoadProjects
     
     ' Validate arrays
-    If Not IsArray(projectName) Then
+    If Not IsArray(ProjectName) Then
         WriteLog 2, CurrentMod, PROC_NAME, "No projects configured"
         Call lstProjects_Change
         Exit Sub
     End If
     
     ' Populate list
-    For i = 1 To UBound(projectName)
-        If Len(projectName(i)) > 0 Then
-            lstProjects.AddItem projectName(i)
+    For i = 1 To UBound(ProjectName)
+        If Len(ProjectName(i)) > 0 Then
+            lstProjects.AddItem ProjectName(i)
         End If
     Next i
     

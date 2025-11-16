@@ -1,9 +1,9 @@
-Attribute VB_Name = "Ribbon_1_mod"
+Attribute VB_Name = "Ribbon_Capital"
 Option Explicit
 Option Compare Text
 
 '=======================================================
-' Module: Ribbon_1_mod
+' Module: Ribbon_Capital
 ' Purpose: Main ribbon UI handlers and callbacks
 ' Author: IMPROVED - November 2025 (Critical Fixes Applied)
 ' Version: 3.0
@@ -35,7 +35,7 @@ Option Compare Text
 '   v1.0 - Original version
 '=======================================================
 
-Private Const CurrentMod As String = "Ribbon_mod"
+Private Const CurrentMod As String = "Ribbon_Capital"
 
 #If VBA7 Then
     Private Declare PtrSafe Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" ( _
